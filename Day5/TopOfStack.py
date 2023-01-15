@@ -1,6 +1,6 @@
+import time
 
-txt = "input.txt"
-def makeStacks():
+def makeStacks(txt):
     with open(txt) as f:
         dirtyStacks = []
         topText = []
@@ -19,11 +19,10 @@ def makeStacks():
         for stack in dirtyStacks:
             if stack != []:
                 cleanStacks.append(stack)
-        print(cleanStacks)
     return cleanStacks
 
-def topOfStack():
-    stack = makeStacks()
+def topOfStack(txt):
+    stack = makeStacks(txt)
     with open(txt) as f:
         for line in f:
             if line.startswith("move"):
@@ -31,19 +30,20 @@ def topOfStack():
                 amount = int(line[1])
                 fromIndex = int(line[3]) - 1
                 toIndex = int(line[5])  - 1  
-                # print("MOVE",amount,fromIndex,toIndex)
                 toAdd = stack[fromIndex][0:amount]
                 stack[fromIndex] = stack[fromIndex][amount:]
-                # print(toAdd)
                 stack[toIndex] = toAdd + stack[toIndex]
-                # print("Move made",stack)
+
     combined = ''
     for s in stack:
         combined+=s[0]
     return combined
-    
-
 
 
 if __name__ == "__main__":
-    print(topOfStack())    
+    txt = "input.txt"
+    print("Starting Part 2")
+    start = time.perf_counter()
+    print(topOfStack(txt))
+    end = time.perf_counter()
+    print(f"Time taken to complete Part 2 = {end - start:0.5f} seconds")   

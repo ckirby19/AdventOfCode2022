@@ -6,7 +6,6 @@ def findStart():
         right = 14
         while right <= len(line)-14:
             window = line[left:right]
-            print(window)
             unique = True
             seen = set()
             for char in window:

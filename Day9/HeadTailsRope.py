@@ -1,4 +1,4 @@
-import math
+
 class Rope():
     def __init__(self,txt) -> None:
         self.txt = txt
@@ -36,11 +36,6 @@ class Rope():
                             if cur not in visitedPosLastTail:
                                 visitedPosLastTail.add(cur)
                                 visited += 1
-
-        #             print(f'Current positions {allCurrentPos} with visited = {visited}')
-        #         print(f'Final positions {allCurrentPos} with visited = {visited}')
-        #         print("\n")
-        # print(sorted(list(visitedPosLastTail),key=lambda x: x[0]))
         return visited
 
 
@@ -59,7 +54,6 @@ class Rope():
                     distanceBetween = xDistanceBetween + yDistanceBetween #Manhattan distance
                     #If not in the same row and column and distance > 2, move diagonally
                     if self.currentH[0] != self.currentT[0] and self.currentH[1] != self.currentT[1] and distanceBetween > 2:
-                        print("Tail moving diagonally")
                         if xDistanceBetween > 1:
                             direction = self.currentH[0] - self.currentT[0]
                             if direction > 0:
@@ -77,7 +71,7 @@ class Rope():
 
                     #if same column but distance equals 2
                     elif self.currentH[0] == self.currentT[0] and distanceBetween == 2:
-                        print("Tail moving up/down")
+                        
                         direction = self.currentH[1] - self.currentT[1]
                         if direction > 0:
                             direction = 1
@@ -85,20 +79,17 @@ class Rope():
                             direction = -1
                         self.currentT = (self.currentT[0],self.currentT[1] + direction)
                     elif self.currentH[1] == self.currentT[1] and distanceBetween == 2:
-                        print("Tail moving left/right")
+                        
                         direction = self.currentH[0] - self.currentT[0]
                         if direction > 0:
                             direction = 1
                         else:
                             direction = -1
                         self.currentT = (self.currentT[0] + direction,self.currentT[1])
-                    else:
-                        print("Tail not moving")
                     if self.currentT not in visitedPositions:
                         visitedPositions.add(self.currentT)
                         visited += 1
                         
-                print(f'End of move {line}, currently head {self.currentH} and tail {self.currentT}. Visited a total of {visited} places \n')
         return visited
 
 
@@ -106,5 +97,5 @@ class Rope():
 if __name__ == "__main__":
     txt = "input.txt"
     rope = Rope(txt)
-    # print(rope.singleTailMoves())
+    print(rope.singleTailMoves())
     print(rope.tenTailMoves())

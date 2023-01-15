@@ -2,8 +2,6 @@
 # each directory has leaves (files) and sub directories which contain leaves
 # we run this recursively and return the sum of all files in that directory
 
-#First we build the tree?
-
 class Node():
     def __init__(self) -> None:
         self.subDirs = dict() #A dictionary of names to nodes

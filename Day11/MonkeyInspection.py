@@ -1,6 +1,4 @@
 import math
-
-
 class Monkey():
     def __init__(self,name,items,operation,test) -> None:
         self.name = name

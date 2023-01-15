@@ -20,13 +20,11 @@ def calculateSignalStrength(txt):
             processSprite(cycles,X)
             if cycles in strengthTimes:
                 finalSum += X*cycles
-                # print(f'after {cycles} we have X of {X} and sum of {X*cycles}\n')
             line = line.strip('/n').split()
             if line[0] == "addx":
                 cycles += 1
                 if cycles in strengthTimes:
                     finalSum += X*cycles
-                    # print(f'after {cycles} we have X of {X} and sum of {X*cycles}\n')
                 X += (int(line[1]))
                 processSprite(cycles,X)
 

@@ -1,3 +1,5 @@
+import time
+
 def binaryInsert(l,val):
     left = 0
     right = len(l)
@@ -24,4 +26,14 @@ def getMaxXElves(X):
 
 
 if __name__ == "__main__":
+    print("Starting Part 1")
+    start = time.perf_counter()
+    print(getMaxXElves(1))
+    end = time.perf_counter()
+    print(f"Time taken to complete Part 1 = {end - start:0.5f} seconds")
+
+    print("Starting Part 2")
+    start = time.perf_counter()
     print(getMaxXElves(3))
+    end = time.perf_counter()
+    print(f"Time taken to complete Part 2 = {end - start:0.5f} seconds")

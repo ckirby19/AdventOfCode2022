@@ -26,7 +26,7 @@ class TreeHouseLocationFinder():
         return output
 
     def countVisibleTrees(self):
-        #First we go top -> bottom, left -> right
+        #We do 2 passes. First we go top -> bottom then left -> right
         largestInColumn = self.matrix[0]
         largestInRow = [0]*len(self.matrix)
         
@@ -40,15 +40,9 @@ class TreeHouseLocationFinder():
 
         for i,row in enumerate(self.matrix):
             largestInRow[i] = row[-1]
-        # print("start of second pass",largestInRow,largestInColumn)
         self.visibilityLoop(largestInRow,largestInColumn,True)
 
-        # print("Final vis loop is:")
-        # for row in self.visibility:
-        #     print(row)
 
-
-    
     def visibilityLoop(self,largestInRow,largestInColumn,backwards):
         if backwards:
             iRange = range(len(self.matrix)-2,0,-1)
@@ -73,10 +67,7 @@ class TreeHouseLocationFinder():
     def highestScenicScore(self):
         highest = 0
         dirs = [[1,0],[-1,0],[0,1],[0,-1]]
-        print("Starting matrix for scenic score is:")
-        for line in self.matrix:
-            print(line)
-        print("\n")
+
         for i in range(1,len(self.matrix)-1):
             for j in range(1,len(self.matrix[0])-1):
                 #i = row, j = column. next = (i)

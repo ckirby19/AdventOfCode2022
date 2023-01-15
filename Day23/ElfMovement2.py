@@ -21,6 +21,9 @@ def move(elves, p, fdir):
 def empty_ground(elves):
     xs = [elf.real for elf in elves]
     ys = [elf.imag for elf in elves]
+    # print(min(xs),min(ys),max(xs),max(ys))
+    for elf in elves:
+        print((elf.real,elf.imag))
     return (max(xs) - min(xs)+1) * (max(ys)-min(ys)+1) - len(elves)
 
 def update(elves, r):

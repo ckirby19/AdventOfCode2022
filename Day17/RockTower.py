@@ -132,9 +132,9 @@ class RockFall():
 
             wouldCollide = self.checkCollision(thisRow,belowRow,False)
             #special check for plus signs:
-            if self.currentRock == 1:
-                currentRow = self.chamber[k-1][leftEdge[0]:leftEdge[0]+len(currentRock[0])]
-                wouldCollide = wouldCollide and self.checkCollision(currentRow,thisRow,False)
+            # if self.currentRock == 1:
+            #     currentRow = self.chamber[k-1][leftEdge[0]:leftEdge[0]+len(currentRock[0])]
+            #     wouldCollide = wouldCollide and self.checkCollision(currentRow,thisRow,False)
 
             if wouldCollide:
                 #Then the rock should land here
@@ -185,13 +185,17 @@ class RockFall():
 
 
 if __name__ == "__main__":
-    txt = "input.txt"
+    import sys
+    if len(sys.argv) < 2:
+        print("Usage: {} <input.txt>".format(sys.argv[0]))
+        sys.exit(1)
+
     start = time.perf_counter()
     print("Started Part 1")
-    rf = RockFall(txt)
+    rf = RockFall(sys.argv[1])
     simu = rf.simulate()
     print(simu)
-    for i in range(80):
-        print(rf.chamber[i])
+    # for i in range(80):
+    #     print(rf.chamber[i])
     end = time.perf_counter()
     print(f"Time taken to complete Part 1 = {end - start:0.5f} seconds")      

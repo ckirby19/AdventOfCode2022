@@ -1,8 +1,3 @@
-class Elf():
-    def __init__(self,startPos) -> None:
-        self.currentPos = startPos
-        self.movementPreference = [(0,-1),(0,1),(-1,0),(1,0)]
-
 class Grid():
     def __init__(self,txt) -> None:
         self.txt = txt
@@ -10,15 +5,24 @@ class Grid():
         self.gridMinY = 0
         self.gridMaxX = 0
         self.gridMaxY = 0
+        self.movementPreference = [(0,-1),(0,1),(-1,0),(1,0)]
         self.elfPositions = set()
-        self.elves = set()
         self.getInitialElfPos()
         self.rounds = 10
 
-        for _ in range(self.rounds):
-            self.moveElves()
-
-        self.emptyTiles = self.countEmptyTiles()
+    def simulate(self):
+        i = 0
+        prevElfs = {}
+        while self.elfPositions != prevElfs:
+            prevElfs = self.elfPositions.copy()
+            self.moveElves(i)
+            i += 1
+            if i == self.rounds:
+                for elf in self.elfPositions:
+                    print(elf)
+                print("Part 1:", self.countEmptyTiles())
+        print("Part 2:",i)
+        i = 0
 
     def getInitialElfPos(self):
         with open(self.txt) as f:
@@ -26,32 +30,29 @@ class Grid():
                 line = line.strip()
                 for x,char in enumerate(line):
                     if char == '#':
-                        elf = Elf((x,y))
-                        self.elves.add(elf)
                         self.elfPositions.add((x,y))
                         self.gridMinX = min(self.gridMinX,x)
                         self.gridMinY = min(self.gridMinY,y)
                         self.gridMaxX = max(self.gridMaxX,x)
                         self.gridMaxY = max(self.gridMaxY,y)    
     
-    def moveElves(self):
+    def moveElves(self,indexShift):
         proposedPositions = dict() #Dictionary of positions: elves who want to move there
-        for elf in self.elves:
-            elfPos = elf.currentPos
+        for elfPos in self.elfPositions:
             occupiedCells = set()
             for i in range(-1,2):
                 for j in range(-1,2):
                     if (i,j) != (0,0):
-                        if (elfPos[0]+i,elfPos[1]+j) in self.elfPositions:
-                            occupiedCells.add((elfPos[0]+i,elfPos[1]+j))
+                        val = (elfPos[0]+i,elfPos[1]+j)
+                        if val in self.elfPositions:
+                            occupiedCells.add(val)
             #Only consider move if occupiedCells is not empty
             if len(occupiedCells) > 0:
                 motionIndex = 0
-                while motionIndex < len(elf.movementPreference):
-                    motion = elf.movementPreference[motionIndex]
-                    canMove = True
+                while motionIndex < len(self.movementPreference):
+                    motion = self.movementPreference[(motionIndex + indexShift)%len(self.movementPreference)]
                     nextPos = (elfPos[0]+motion[0],elfPos[1]+motion[1])
-                    canMove &= nextPos not in occupiedCells
+                    canMove = nextPos not in occupiedCells
 
                     if motion[0] != 0:
                         #Then we are moving East or West
@@ -63,12 +64,9 @@ class Grid():
                     
                     if canMove:
                         if nextPos not in proposedPositions:
-                            proposedPositions[nextPos] = [elf]
+                            proposedPositions[nextPos] = [elfPos]
                         else:
-                            proposedPositions[nextPos].append(elf)
-
-                        del elf.movementPreference[motionIndex]
-                        elf.movementPreference.append(motion)
+                            proposedPositions[nextPos].append(elfPos)
                         break
                     else:
                         motionIndex += 1
@@ -76,9 +74,8 @@ class Grid():
         # If there are moves than one elves who want to move to the same position, then they are not allowed to move
         for nextPos in proposedPositions:
             if len(proposedPositions[nextPos]) == 1:
-                elf = proposedPositions[nextPos][0]
-                self.elfPositions.remove(elf.currentPos)
-                elf.currentPos = nextPos
+                elfPos = proposedPositions[nextPos][0]
+                self.elfPositions.remove(elfPos)
                 self.elfPositions.add(nextPos)
                 self.gridMinX = min(self.gridMinX,nextPos[0])
                 self.gridMinY = min(self.gridMinY,nextPos[1])
@@ -86,7 +83,6 @@ class Grid():
                 self.gridMaxY = max(self.gridMaxY,nextPos[1])   
             
         
-
     def countEmptyTiles(self):
         x = self.gridMaxX + 1 - self.gridMinX
         y = self.gridMaxY + 1 - self.gridMinY
@@ -100,5 +96,4 @@ if __name__ == "__main__":
         sys.exit(1)
 
     grid = Grid(sys.argv[1])
-    print("Part 1: {}".format(grid.emptyTiles))
-    # print("Part 2: {}".format(grid.countEmptyTiles()))
+    grid.simulate()
