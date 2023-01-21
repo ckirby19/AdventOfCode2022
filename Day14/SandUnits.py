@@ -37,7 +37,6 @@ class SandGrid:
                                 rowsWithRocks[y].add(rockStartX)
                             else:
                                 rowsWithRocks[y] = {rockStartX}
-                            # posWithRocks.add((rockStart[0],y))
                     else:
                         rockMin = min(rockStartX,rockEndX)
                         rockMax = max(rockStartX,rockEndX)
@@ -54,7 +53,6 @@ class SandGrid:
             for x in range(self.minX,self.maxX+1):
                 if y in rowsWithRocks.keys():
                     if x in rowsWithRocks[y]:
-                        # print(x,y)
                         toAdd.append('#')
                     else:
                         toAdd.append('.')
@@ -92,8 +90,6 @@ class SandGrid:
         while moveType <= 2:
             dir = self.directions[moveType]
             nextPos = (currentPos[0] + dir[0], currentPos[1] + dir[1])
-            # if self.time == 23:
-            #     print(currentPos,nextPos,dir)
             if not self.inRockRange(nextPos):
                 self.flowing = True
                 break
@@ -107,9 +103,6 @@ class SandGrid:
             #Then the sand has landed
             self.restingSand += 1
             self.grid[currentPos[1]][currentPos[0]] = 'o'
-        # print(f'Time = {self.time}, Grid is:')
-        # for line in self.grid:
-        #     print(line)
 
     def advanceUntilBlocked(self):
         #For part 2, with floor at bottom, this will continuously add sand until sand blocks the source
@@ -132,10 +125,6 @@ class SandGrid:
             if currentPos == (self.sandStart[0] - self.minX,0):
                 blocked = True
 
-            # print(f'Time = {self.time}, Grid is:')
-            # for line in self.grid:
-            #     print(line)
-
     def simulate(self):
         if self.isPart2:
             self.advanceUntilBlocked()
@@ -151,14 +140,19 @@ class SandGrid:
                 
 if __name__ == "__main__":
     txt = "input.txt"
-    grid = SandGrid(txt,True)
+    
+    start = time.perf_counter()
+    print("Started Part 1 grid creation and simulation")
+    grid = SandGrid(txt,False)
+    print(grid.simulate())
+    end = time.perf_counter()
+    print(f"Time taken to complete Part 1 = {end - start:0.5f} seconds")  
+  
     start = time.perf_counter()
     print("Started Part 2 grid creation")
-    # print(grid)
-    print("Started simulation")
-    total = grid.simulate()
-    print(total)
+    grid2 = SandGrid(txt,True)
+    print(grid2.simulate())
     end = time.perf_counter()
-    print(f"Time taken to complete Part 1 = {end - start:0.5f} seconds")      
+    print(f"Time taken to complete Part 2 = {end - start:0.5f} seconds")      
 
                         

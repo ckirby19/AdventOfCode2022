@@ -6,7 +6,7 @@ def ReadAndMix(txt,x,y):
 
     indices = list(range(len(mixed)))
 
-    for i in indices*x:
+    for i in indices*x: #indices*x will create new list
         j = indices.index(i)
         indices.pop(j)
         indices.insert((j+mixed[i]) % (len(indices)), i)

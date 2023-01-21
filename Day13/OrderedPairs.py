@@ -1,5 +1,7 @@
 import ast
+import time
 
+DEBUG = False
 def FindOrderedPairsSum(txt):
     orderedPairs = []
     with open(txt) as f:
@@ -10,7 +12,8 @@ def FindOrderedPairsSum(txt):
             right = ast.literal_eval(allText[i+1])
             if IsPairOrdered(left,right):
                 orderedPairs.append(pairIndex)
-    print(orderedPairs)
+    if DEBUG:
+        print(orderedPairs)
     return sum(orderedPairs)
 
 def binaryInsertion(element,sortedArray):
@@ -24,10 +27,8 @@ def binaryInsertion(element,sortedArray):
         else:
             #This pair is not in order, so element should be right of middle or in middles place
             left = middle + 1
-            # print(left,middle,right)
             
     newArray = sortedArray[:left] + [element] + sortedArray[left:]
-    # print(newArray)
     return newArray,(left+1)
 
 def CalculateDecoderKey(txt):
@@ -44,7 +45,8 @@ def CalculateDecoderKey(txt):
                     orderedOutput, _ = binaryInsertion(element,orderedOutput)
     orderedOutput,distressIndex1 =  binaryInsertion([[2]],orderedOutput)
     orderedOutput,distressIndex2 = binaryInsertion([[6]],orderedOutput)
-    print(orderedOutput)
+    if DEBUG:
+        print(orderedOutput)
     return distressIndex1*distressIndex2
 
 def IsPairOrdered(left,right):
@@ -94,5 +96,14 @@ def IsPairOrdered(left,right):
 
 if __name__ == "__main__":
     txt = "input.txt"
-    # print(FindOrderedPairsSum(txt))
+    start = time.perf_counter()
+    print("Started Part 1")
+    print(FindOrderedPairsSum(txt))
+    end = time.perf_counter()
+    print(f"Time taken to complete Part 1 = {end - start:0.5f} seconds")
+
+    start = time.perf_counter()
+    print("Started Part 2")
     print(CalculateDecoderKey(txt))
+    end = time.perf_counter()
+    print(f"Time taken to complete Part 2 = {end - start:0.5f} seconds")

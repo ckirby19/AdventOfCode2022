@@ -77,7 +77,7 @@ def twoTraverseGraph(shortestPathBetween,flowRates,nonZeroValves):
     #Take nonZeroValves and split in two, with every combination ignoring cases where myself and elephant are swapped
     # This will give us a total of (x = len(nonZeroValves)): (X choose X//2)/2 combinations
 
-    combos = itertools.combinations(nonZeroValves,len(nonZeroValves)//2) #What will happen here if len is not divisible by 2
+    combos = itertools.combinations(nonZeroValves,len(nonZeroValves)//2) #What will happen here if len is not divisible by 2?
     l = [[set(x), set(y for y in nonZeroValves if y not in x)] for x in combos]
     finalCombos = l[:len(l)//2]
     bestTotal = 0

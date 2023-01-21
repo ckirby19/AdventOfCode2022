@@ -1,4 +1,5 @@
 from sympy import symbols, solve
+import time
 ops = { '+': lambda x,y: x+y, '-': lambda x,y: x-y, '*': lambda x,y: x*y, '/': lambda x,y: x/y, '=': lambda x,y: solve(x-y)[0]}
 
 def readInput(txt,part2):
@@ -15,7 +16,7 @@ def readInput(txt,part2):
                 data[name] = line[1:]
             else:
                 data[name] = line[1]
-    return readData(data,'root',True)
+    return readData(data,'root',part2)
 
 def readData(data,name,part2):
     monkeyData = data[name]
@@ -27,7 +28,6 @@ def readData(data,name,part2):
         left = readData(data,monkeyData[0],part2)
         right = readData(data,monkeyData[2],part2)
         newVal = ops[monkeyData[1]](left,right)
-        # print(f"New val from {left} and {right} gives {newVal}")
         data[name] = newVal
         return newVal
     else:
@@ -35,4 +35,14 @@ def readData(data,name,part2):
 
 if __name__ == "__main__":
     txt = "input.txt"
+    start = time.perf_counter()
+    print("Started Part 1")
+    print(readInput(txt,False))
+    end = time.perf_counter()
+    print(f"Time taken to complete Part 1 = {end - start:0.5f} seconds")  
+  
+    start = time.perf_counter()
+    print("Started Part 2")
     print(readInput(txt,True))
+    end = time.perf_counter()
+    print(f"Time taken to complete Part 2 = {end - start:0.5f} seconds")      

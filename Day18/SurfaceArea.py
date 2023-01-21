@@ -70,7 +70,7 @@ class SACounter:
                     self.totalSA += 1
 
     def calculateExternalSA(self):
-        #Flood fill
+        #Flood fill from an online method
         seen = set()
         stack = [(self.minX-1,self.minY-1,self.minZ-1)]
         xrange = range(self.minX-1,self.maxX+1)
@@ -94,8 +94,7 @@ if __name__ == "__main__":
     start = time.perf_counter()
     print("Started Part 1")
     saCounter = SACounter(txt)
-    print(saCounter.totalSA) 
-    print(saCounter.externalSA)
+    print("Total SA:",saCounter.totalSA) 
+    print("External SA:",saCounter.externalSA)
     end = time.perf_counter()
     print(f"Time taken to complete Part 1 & 2 = {end - start:0.5f} seconds")    
-    # saCounter.plotSquares()
