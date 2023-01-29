@@ -74,7 +74,8 @@ class Grid():
 
             else:
                 self.currentDirection = np.matmul(self.rotationMatrices[instruction],np.transpose(self.currentDirection))
-        print(self.position[0]+1,self.position[1]+1,(self.currentDirection[0],self.currentDirection[1]))
+        if DEBUG:
+            print(self.position[0]+1,self.position[1]+1,(self.currentDirection[0],self.currentDirection[1]))
         return 1000*(self.position[0]+1) + 4*(self.position[1]+1) + self.score[(self.currentDirection[0],self.currentDirection[1])]
 
     def followPathPart2(self):

@@ -1,137 +1,104 @@
 import math
+import re
+from z3 import *
+# target = 2000000 + 910778
+class BeaconPos():
+    def __init__(self,txt,target) -> None:
+        self.txt = txt
+        self.originalTarget = target
+        self.target = target
+        self.data = []
+        self.sensors = []
+        self.beacons = []
+        self.sbMap = []
+        self.sensorDistanceToBeacon = dict()
+        self.maxX = 0
+        self.minX = math.inf
+        self.maxY = 0
+        self.minY = math.inf
+        self.readInput()
 
-target = 2000000 + 910778
+    def manhattanDis(self,a,b):
+        return abs(a[0] - b[0]) + abs(a[1] - b[1])
 
-def readInput(txt):
-    sensors = []
-    sensorClosestDistance = dict()
-    beacons = []
-    maxX = 0
-    minX = math.inf
-    maxY = 0
-    minY = math.inf
-    with open(txt) as f:
-        for line in f:
-            line = line.strip().split()
-            sensorX = int(line[2][2:].strip(","))
-            sensorY = int(line[3][2:].strip(":"))
-            beaconX = int(line[8][2:].strip(","))
-            beaconY = int(line[9][2:])
-            thisSensor = (sensorX,sensorY)
-            thisBeacon = (beaconX,beaconY)
-            distanceBetween = manhattanDis(thisSensor,thisBeacon)
+    def readInput(self):
+        with open(self.txt) as f:
+            for line in f:
+                sX,sY,bX,bY = tuple(map(int,re.findall(r"-?\d+",line)))
+                self.data.append((sX,sY,bX,bY))
+                thisSensor = (sX,sY)
+                thisBeacon = (bX,bY)
+                distanceBetween = self.manhattanDis(thisSensor,thisBeacon)
 
-            sensors.append(thisSensor)
-            beacons.append(thisBeacon)
-            #Set this to include distances of S to beacons
-            maxX = max(maxX,max(sensorX + distanceBetween,beaconX))
-            minX = min(minX,min(sensorX - distanceBetween,beaconX))
-            #check if beacon is left or right of sensor
-            maxY = max(maxY,max(sensorY + distanceBetween,beaconY))
-            minY = min(minY,min(sensorY - distanceBetween,beaconY))
+                self.sensors.append(thisSensor)
+                self.beacons.append(thisBeacon)
 
-    print("MinY is:",minY)
+                self.maxX = max(self.maxX,max(sX + distanceBetween,bX))
+                self.minX = min(self.minX,min(sX - distanceBetween,bX))
+                self.maxY = max(self.maxY,max(sY + distanceBetween,bY))
+                self.minY = min(self.minY,min(sY - distanceBetween,bY))
 
-    for i in range(len(sensors)):
-        sensor = sensors[i]
-        beacon = beacons[i]
-        shiftedSensor = (sensor[0] - minX,sensor[1] - minY)
-        shiftedBeacon = (beacon[0] - minX, beacon[1] - minY)
-        sensors[i] = shiftedSensor
-        beacons[i] = shiftedBeacon
-        sensorClosestDistance[shiftedSensor] = manhattanDis(shiftedSensor,shiftedBeacon)
+        for i in range(len(self.sensors)):
+            sensor = self.sensors[i]
+            beacon = self.beacons[i]
+            shiftedSensor = (sensor[0] - self.minX,sensor[1] - self.minY)
+            shiftedBeacon = (beacon[0] - self.minX, beacon[1] - self.minY)
+            self.sensors[i] = shiftedSensor
+            self.beacons[i] = shiftedBeacon
+            self.sensorDistanceToBeacon[shiftedSensor] = self.manhattanDis(shiftedSensor,shiftedBeacon)
 
-    i = target
-    requiredMap = []
-    sensors = set(sensors)
-    beacons = set(beacons)
-    for j in range(maxX - minX):
-        if (j,i) in sensors:
-            requiredMap.append('S')
-        elif (j,i) in beacons:
-            requiredMap.append('B')
-        else:
-            requiredMap.append('.')
-    # print("created map",requiredMap)
-    return requiredMap,sensors,sensorClosestDistance
-    sbMap = []
-    for i in range(maxY - minY):
-        toAdd = []
-        for j in range(maxX - minX):
-            if (j,i) in sensors:
-                toAdd.append('S')
-            elif (j,i) in beacons:
-                toAdd.append('B')
+        self.target -= self.minY
+        self.sensors = set(self.sensors)
+        self.beacons = set(self.beacons)
+        for i in range(self.maxX - self.minX):
+            if (i,target) in self.sensors:
+                self.sbMap.append('S')
+            elif (i,target) in self.beacons:
+                self.sbMap.append('B')
             else:
-                toAdd.append('.')
-        sbMap.append(toAdd)
-    print("Created map")
-    # for i,line in enumerate(sbMap):
-    #     print(i, line)
-    return sbMap,sensors,sensorClosestDistance
+                self.sbMap.append('.')
 
-def manhattanDis(a,b):
-    return abs(a[0] - b[0]) + abs(a[1] - b[1])
-
-def countBeaconNonSpots(sbMap,sensors,sensorClosestDistance):
-    #For each row, go through each sensor and if the distance from that sensor is less than the distance to its corresponding beacon
-    #Add a '#' there and add to count
-    # rowTotals = [0]*len(sbMap)
-    # for i in range(len(sbMap)):
-    # i = 20
-    # i = 2000000 + 910778
-    totalInRow = 0
-
-    for sensor in sensors:
-        for i in range(sensorClosestDistance[sensor]):
-            # print(i)
-            posY1 = sensor[1] + i
-            posY2 = sensor[1] - i
-            width = (sensorClosestDistance[sensor] - i)
-            print(width)
-            # if posY1 == 2000000 + 910778:
-            for j in range(-width,width+1):
-                posX = sensor[0] + j
-                # print(posX)
-                if posY1 == target:
-                    if sbMap[posX] == 'S':
-                        totalInRow += 1
-                    elif sbMap[posX] == '.':
-                        totalInRow += 1
-                        sbMap[posX] = '#'
-                elif posY2 == target:
-                    if sbMap[posX] == 'S':
-                        totalInRow += 1
-                    elif sbMap[posX] == '.':
-                        totalInRow += 1
-                        sbMap[posX] = '#'
-    print("Final",sbMap)
-    return totalInRow
-                    
-    for j in range(len(sbMap[0])):
-        if sbMap[i][j] != 'B':
-            if (j,i) in sensorsClosestDistance.keys():
-                sbMap[i][j] = 'S'
+    def countBeaconNonSpots(self):
+        #For each sensor, if the distance from that sensor is less than the distance to its corresponding beacon
+        #Add a '#' there and add to count
+        totalInRow = 0
+        for i in range(len(self.sbMap)):
+            if self.sbMap[i] == "B":
+                continue
+            elif self.sbMap[i] == "S":
                 totalInRow += 1
             else:
-                for k in range(len(sensors)):
-                    sensor = sensors[k]
-                    distanceToSensor = manhattanDis(sensor,(j,i))
-                    if distanceToSensor <= sensorClosestDistance[sensor]:
-                        sbMap[i][j] = '#'
+                for sensor in self.sensors:
+                    if self.manhattanDis((i,target),sensor) <= self.sensorDistanceToBeacon[sensor]:
                         totalInRow += 1
+                        self.sbMap[i] = '#'
                         break
-        # rowTotals[i] = totalInRow
-    return totalInRow
-    return rowTotals[2000000 + 910778]
+        return totalInRow
 
+    def getDistressBeacon(self):
+        val = self.originalTarget*2
+        s = z3.Solver()
+        x, y = z3.Int("x"), z3.Int("y")
 
+        s.add(0 <= x) 
+        s.add(x <= val)
+        s.add(0 <= y)
+        s.add(y <= val)
 
+        z3_abs = lambda x: z3.If(x>=0,x,-x)
+
+        for sx, sy, bx, by in self.data:
+            m = abs(sx - bx) + abs(sy - by)
+            s.add(z3_abs(sx - x) + z3_abs(sy - y) > m)
+        assert s.check() == z3.sat
+        model = s.model()
+        return model[x].as_long() * val + model[y].as_long()
 
 if __name__ == '__main__':
     txt = "input.txt"
-    sbMap,sensors,sensorsClosestDistance = readInput(txt)
-    
-    print(countBeaconNonSpots(sbMap,sensors,sensorsClosestDistance))
-    # for i,line in enumerate(sbMap):
-    #     print(line)
+    target = 2000000
+    bp = BeaconPos(txt,target)
+    print("Running Part 1")
+    print("Part 1: ",bp.countBeaconNonSpots())
+    print("Running Part 2")
+    print("Part 2: ",bp.getDistressBeacon())

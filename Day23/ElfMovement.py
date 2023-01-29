@@ -5,7 +5,7 @@ class Grid():
         self.gridMinY = 0
         self.gridMaxX = 0
         self.gridMaxY = 0
-        self.movementPreference = [(0,-1),(0,1),(-1,0),(1,0)]
+        self.movementPreference = [(0,-1),(0,1),(-1,0),(1,0)] #(x,y)
         self.elfPositions = set()
         self.getInitialElfPos()
         self.rounds = 10
@@ -18,11 +18,8 @@ class Grid():
             self.moveElves(i)
             i += 1
             if i == self.rounds:
-                for elf in self.elfPositions:
-                    print(elf)
                 print("Part 1:", self.countEmptyTiles())
         print("Part 2:",i)
-        i = 0
 
     def getInitialElfPos(self):
         with open(self.txt) as f:
@@ -49,29 +46,29 @@ class Grid():
             #Only consider move if occupiedCells is not empty
             if len(occupiedCells) > 0:
                 motionIndex = 0
-                while motionIndex < len(self.movementPreference):
+                canMove = False
+                while motionIndex < len(self.movementPreference) and not canMove:
                     motion = self.movementPreference[(motionIndex + indexShift)%len(self.movementPreference)]
                     nextPos = (elfPos[0]+motion[0],elfPos[1]+motion[1])
                     canMove = nextPos not in occupiedCells
 
                     if motion[0] != 0:
                         #Then we are moving East or West
-                        canMove &= (elfPos[0]+motion[0],elfPos[1]+1) not in occupiedCells
-                        canMove &= (elfPos[0]+motion[0],elfPos[1]-1) not in occupiedCells
+                        canMove &= (elfPos[0]+motion[0],elfPos[1]+1) not in occupiedCells #Bottom
+                        canMove &= (elfPos[0]+motion[0],elfPos[1]-1) not in occupiedCells #Top
                     else:
-                        canMove &= (elfPos[0]+1,elfPos[1]+motion[1]) not in occupiedCells
-                        canMove &= (elfPos[0]-1,elfPos[1]+motion[1]) not in occupiedCells
+                        canMove &= (elfPos[0]+1,elfPos[1]+motion[1]) not in occupiedCells #Right
+                        canMove &= (elfPos[0]-1,elfPos[1]+motion[1]) not in occupiedCells #Left
                     
                     if canMove:
                         if nextPos not in proposedPositions:
                             proposedPositions[nextPos] = [elfPos]
                         else:
                             proposedPositions[nextPos].append(elfPos)
-                        break
                     else:
                         motionIndex += 1
         # Now we move to the second half of the motion
-        # If there are moves than one elves who want to move to the same position, then they are not allowed to move
+        # If there are moves that more than one ef wants to move to, then they are not allowed to move
         for nextPos in proposedPositions:
             if len(proposedPositions[nextPos]) == 1:
                 elfPos = proposedPositions[nextPos][0]
@@ -85,7 +82,7 @@ class Grid():
         
     def countEmptyTiles(self):
         x = self.gridMaxX + 1 - self.gridMinX
-        y = self.gridMaxY + 1 - self.gridMinY
+        y = self.gridMaxY - self.gridMinY
         return x*y - len(self.elfPositions)
                     
 
